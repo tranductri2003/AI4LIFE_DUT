@@ -1,48 +1,66 @@
-from supervision.notebook.utils import show_frame_in_notebook
-from supervision.video import get_video_frames_generator
-from supervision.draw.color import ColorPalette
-from supervision.detection.core import Detections, BoxAnnotator
-from typing import List, Optional, Union
-import matplotlib.pyplot as plt
-import numpy as np
-import cv2
-from typing import Callable, Generator, Optional, Tuple
-from dataclasses import dataclass
-from ultralytics import YOLO
+from IPython import display
 import os
-import scipy
-
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-MODEL = "yolov8n.pt"
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+import numpy as np
+from ultralytics import YOLO
+import tkinter
+import supervision as sv
+MODEL = "yolov8s.pt"
 model = YOLO(MODEL)
-model.fuse()
-VIDEO = "video.mp4"
-model = YOLO("yolov8n.pt")
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+SAMPLE_VIDEO_PATH = "video.mp4"
+# print(sv.VideoInfo.from_video_path(SAMPLE_VIDEO_PATH))
+# VideoInfo(width=1920, height=1080, fps=21, total_frames=2921)
 
 
-def linear_assignment(cost_matrix, thresh):
-    if cost_matrix.size == 0:
-        return np.empty((0, 2), dtype=int), tuple(range(cost_matrix.shape[0])), tuple(range(cost_matrix.shape[1]))
-    matches, unmatched_a, unmatched_b = [], [], []
+def process_frame(frame: np.ndarray, _) -> np.ndarray:
+    # detect
+    results = model(frame, imgsz=1280)[0]
+    detections = sv.Detections.from_yolov8(results)
+    detections = detections[detections.class_id == 0]
+    zone.trigger(detections=detections)
 
-    # transform matrix to biadjacency_matrix
-    biadjacency_matrix = scipy.sparse.coo_matrix(cost_matrix)
+    # annotate
+    box_annotator = sv.BoxAnnotator(
+        thickness=4, text_thickness=4, text_scale=2)
+    labels = [f"{model.names[class_id]} {confidence:0.2f}" for _,
+              confidence, class_id, _ in detections]
+    frame = box_annotator.annotate(
+        scene=frame, detections=detections, labels=labels)
+    frame = zone_annotator.annotate(scene=frame)
 
-    # Use scipy.sparse.csgraph.min_weight_full_bipartite_matching() from SciPy instead of lap.lapjv
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csgraph.min_weight_full_bipartite_matching.html
-    x, y = scipy.sparse.csgraph.min_weight_full_bipartite_matching(
-        biadjacency_matrix, maximize=True)
-
-    matches.extend([ix, mx] for ix, mx in enumerate(x) if mx >= 0)
-    unmatched_a = np.where(x < 0)[0]
-    unmatched_b = np.where(y < 0)[0]
-    matches = np.asarray(matches)
-
-    return matches, unmatched_a, unmatched_b
+    return frame
 
 
-results = model.track(source="video.mp4",
-                      stream=True,
-                      show=True,
-                      tracker="bytetrack.yaml")
+# initiate polygon zone
+polygon = np.array([
+    [961, 1078],
+    [763, 550],
+    [1502, 254],
+    [1914, 260],
+    [1920, 1080]
+])
+video_info = sv.VideoInfo.from_video_path(SAMPLE_VIDEO_PATH)
+zone = sv.PolygonZone(
+    polygon=polygon, frame_resolution_wh=video_info.resolution_wh)
+
+# initiate annotators
+box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
+zone_annotator = sv.PolygonZoneAnnotator(
+    zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
+
+# extract video frame
+generator = sv.get_video_frames_generator(SAMPLE_VIDEO_PATH)
+iterator = iter(generator)
+frame = next(iterator)
+
+
+sv.process_video(source_path=SAMPLE_VIDEO_PATH,
+                 target_path=f"result.mp4", callback=process_frame)
+display.clear_output()
+# x = np.linspace(0, 20, 100)
+# mpl.use('TkAgg')
+# plt.show()
+# sv.show_frame_in_notebook(frame, (16, 16))
