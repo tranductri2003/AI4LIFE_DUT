@@ -1,0 +1,13 @@
+{
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "/usr/bin/zsh"
+    }
+  },
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "python.analysis.typeCheckingMode": "basic"
+}

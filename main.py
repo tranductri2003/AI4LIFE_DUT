@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 from ultralytics import YOLO
-import tkinter
 import supervision as sv
+import cv2 as cv
 MODEL = "yolov8s.pt"
 model = YOLO(MODEL)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-SAMPLE_VIDEO_PATH = "video.mp4"
+SAMPLE_VIDEO_PATH = "video60.avi"
 # print(sv.VideoInfo.from_video_path(SAMPLE_VIDEO_PATH))
 # VideoInfo(width=1920, height=1080, fps=21, total_frames=2921)
 
@@ -30,7 +30,8 @@ def process_frame(frame: np.ndarray, _) -> np.ndarray:
     frame = box_annotator.annotate(
         scene=frame, detections=detections, labels=labels)
     frame = zone_annotator.annotate(scene=frame)
-
+    cv.imshow("image", frame)
+    # cv.waitKey(0)
     return frame
 
 
