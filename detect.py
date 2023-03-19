@@ -7,7 +7,7 @@ from ultralytics import YOLO
 import tkinter
 import supervision as sv
 import cv2
-
+from supervision import PolygonZone
 
 MODEL = "yolov8n.pt"
 model = YOLO(MODEL)
@@ -59,12 +59,12 @@ box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
 zone_annotator = sv.PolygonZoneAnnotator(
     zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
 
-"""
+
 # Xuat ket qua ra file
-sv.process_video(source_path=SAMPLE_VIDEO_PATH,
-                 target_path=f"result_yolov8n.mp4", callback=process_frame)
-display.clear_output()
-"""
+# sv.process_video(source_path=SAMPLE_VIDEO_PATH,
+#                  target_path=f"result_yolov8n.mp4", callback=process_frame)
+# display.clear_output()
+
 
 # Xuat ra man hinh
 
