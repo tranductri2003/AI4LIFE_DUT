@@ -13,7 +13,7 @@ MODEL = "yolov8n.pt"
 model = YOLO(MODEL)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-SAMPLE_VIDEO_PATH = "video.mp4"
+SAMPLE_VIDEO_PATH = "video1606_10.mp4"
 VIDEO_INFO = sv.VideoInfo.from_video_path(SAMPLE_VIDEO_PATH)
 
 WIDTH = VIDEO_INFO.width
@@ -22,13 +22,17 @@ FPS = VIDEO_INFO.fps
 TOTAL_FRAMES = VIDEO_INFO.total_frames
 
 
+data = [0, 0]
+res = 0
+
+
 def process_frame(frame: np.ndarray, _) -> np.ndarray:
     # 3 detect
     results = model(frame, imgsz=1280)[0]
     detections = sv.Detections.from_yolov8(results)
     detections = detections[(detections.class_id == 0)
                             & (detections.confidence > 0.4)]
-    zone.trigger(detections=detections)
+    zone.trigger(detections, data)
 
     # 4 annotate
     box_annotator = sv.BoxAnnotator(
@@ -74,9 +78,36 @@ iterator = iter(generator)
 frame = next(iterator)
 
 # matrix_rotate = np.array([[0.9397, 0.342], [-0.342, 0.9397]])
+temp = [0, 0]
+i = 0
+sumPerson = 0
+currentLen = 0
 for frame in iterator:
+
     # frame = np.dot(frame, matrix_rotate)
     current = process_frame(frame, 1)
+
+    if i < 10:
+        sumPerson += data[-1]
+        i += 1
+    else:
+        soNguoiTrong10Frame = sumPerson/10
+        if soNguoiTrong10Frame-soNguoiTrong10Frame//1 < 0.5:
+            temp.append(soNguoiTrong10Frame//1)
+        else:
+            temp.append(soNguoiTrong10Frame//1+1)
+        currentLen += 1
+        sumPerson = 0
+        i = 0
+
+        print(temp)
+        currentt = temp[-1]
+        previous = temp[-2]
+        if currentt < previous:
+            res = max(res, previous)
+        else:
+            res += currentt-previous
+        print(res)
 
     width = int(current.shape[1] * 0.5)
     height = int(current.shape[0] * 0.5)

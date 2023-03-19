@@ -2,13 +2,16 @@ from typing import Optional, Tuple
 
 import cv2
 import numpy as np
-
+import supervision
 from supervision import Detections
 from supervision.detection.utils import generate_2d_mask
 from supervision.draw.color import Color
 from supervision.draw.utils import draw_polygon, draw_text
 from supervision.geometry.core import Position
 from supervision.geometry.utils import get_polygon_center
+
+
+print(supervision.__version__)
 
 
 class PolygonZone:
@@ -21,13 +24,15 @@ class PolygonZone:
         self.polygon = polygon
         self.frame_resolution_wh = frame_resolution_wh
         self.triggering_position = triggering_position
-        self.mask = generate_2d_mask(polygon=polygon, resolution_wh=frame_resolution_wh)
+        self.mask = generate_2d_mask(
+            polygon=polygon, resolution_wh=frame_resolution_wh)
         self.current_count = 0
 
     def trigger(self, detections: Detections) -> np.ndarray:
         anchors = (
             np.ceil(
-                detections.get_anchor_coordinates(anchor=self.triggering_position)
+                detections.get_anchor_coordinates(
+                    anchor=self.triggering_position)
             ).astype(int)
             - 1
         )
