@@ -7,6 +7,8 @@ Based on your OS, pick the suitable tutorials below and install Docker
 - Windows: https://docs.docker.com/desktop/install/windows-install/
 
 ### Step 2: Building a container to run our app
+Be sure that you have `git clone` our project. cd to folder `docker` initially.
+If you are in Ubuntu, `sudo` should be added in each command.
 Run the following command in your terminal
 ```
 docker build -t all_newbie_ai4life/round1 .
@@ -46,4 +48,5 @@ Your terminal should output logs of the server:
 
 ### Step 5: Result
 - Checkout `/output` folder, it should finish rendering our video and name it `output.mp4`.
+- If you encounter some error that `output.mp4` cannot be played and you are in Ubuntu, It should be the format of video is not supported. Try install `GStreamer Multimedia Codecs` from `Ubuntu Software store` and open `output.mp4` via system video player.
 - To run with another video, replace the video in `./notebook/input.mp4` with another video, keeping the same name and do from Step 2 - Step 5 again.
