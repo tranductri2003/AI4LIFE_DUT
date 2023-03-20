@@ -10,7 +10,7 @@
 
 ## Cách chạy thử
 Các hướng dẫn cụ thể sẽ được nêu chi tiết. 
-### Cách 1: Colab
+### Cách 1: Colab (Dạ quý thầy cô ưu tiên cách này ạ)
 Thầy cô có thể chạy thử project này trên Google Colab bằng cách truy cập vào link sau.
 https://colab.research.google.com/drive/1oWHBB3Io54YwXhEdLwY61vBwHOOGDRzq?fbclid=IwAR2uXjEDMxqxVG6zwehG7Sh327WYKnEvqupVAjFXlh-1M3LTJT_SBhf3328#scrollTo=0xtcx1Y6tPtF
 
