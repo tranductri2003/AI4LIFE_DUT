@@ -11,7 +11,7 @@ from supervision.geometry.core import Position
 from supervision.geometry.utils import get_polygon_center
 
 
-print(supervision.__version__)
+
 
 
 class PolygonZone:
