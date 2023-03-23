@@ -26,7 +26,7 @@ TOTAL_FRAMES = VIDEO_INFO.total_frames
 
 personPerFrame = [0, 0]
 res = 0
-N = 20
+N = 40
 personPerNFrame = [0, 0]
 i = 0
 sumPerson = 0
